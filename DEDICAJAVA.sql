@@ -2,7 +2,7 @@ CREATE TABLE ENDERECO
 (
  RUA VARCHAR2(200) NOT NULL
 ,NUMERO NUMBER NOT NULL
-, COMPLEMTO VARCHAR2(4)NOT NULL
+,CCOMPLEMTO VARCHAR2(4)NOT NULL
 ,ID_ENDERECO NUMBER NOT NULL
 ,CONSTRAINT ENDERECO_PK PRIMARY KEY (ID_ENDERECO) ENABLE
 );
@@ -32,3 +32,46 @@ ALTER TABLE PESSOA ADD CONSTRAINT FK_NUMERO_CONTA foreign key( NUMERO_CONTA ) re
 
 /*CRIANDO SEQUENCE*/
 CREATE SEQUENCE S_ID_ENDERECO INCREMENT BY 1 START WITH 1 MINVALUE 1;
+
+/*INSERIR DADOS NA TABELA ENDEREÇO*/
+INSERT INTO ENDERECO (NUMERO, RUA, COMPLEMTO)
+    VALUES (345, 'AVENIDA BOA VISTA', 'CASA');
+INSERT INTO ENDERECO (NUMERO, RUA, COMPLEMTO)
+    VALUES (171, 'MORRO DA CONCEIÇÃO', 'CASA');
+    
+/*INSERIR DADOS NA TABELA CONTA*/
+INSERT INTO CONTA (numero, limite, saldo)
+    VALUES (2355, 500.00, 3000.0);
+INSERT INTO CONTA (numero, limite, saldo)
+    VALUES (544, 399.00, 300.00);
+    
+/*INSERIR DADOS NA TABELA PESSOA*/
+INSERT INTO PESSOA (NOME, IDADE, SEXO, CPF)
+    VALUES ('ANA', 27, 'FE', '04508889439');
+INSERT INTO PESSOA (NOME, IDADE, SEXO, CPF)
+    VALUES ('CARLOS', 45, 'MA', '12362377799');
+    
+/*UPDATE PESSOA ADICIONANDO ID ENDEREÇO*/
+UPDATE PESSOA SET id_endereco = 1 WHERE CPF = '04508889439';
+UPDATE PESSOA SET id_endereco = 2 WHERE CPF = '12362377799';
+
+/*UPDATE PESSOA ADICIONANDO NUMERO DE CONTA*/
+UPDATE PESSOA SET numero_conta = 2355 WHERE CPF = '04508889439';
+UPDATE PESSOA SET numero_conta = 544 WHERE CPF = '12362377799';
+
+/*1 Quero todas as pessoas que residem em apartamentos.*/
+select p.*, e.CCOMPLEMTO from Pessoa p, Endereco e
+ where p.id_endereco = e.id_endereco 
+   and upper(e.CCOMPLEMTO) = 'AP';
+
+/*2 Quero todas as pessoas que tenha saldo da conta MAIOR que R$100,00*/
+SELECT p.*, c.saldo FROM Pessoa p, Conta c 
+ where p.numero_conta = c.numero
+   and c.saldo > 100;
+
+/*3 Quero os endereços das pessoas que não tem saldo em conta e residem em casa.*/
+select e.*, p.cpf, p.nome, c.numero from Pessoa p, Endereco e, Conta c
+ where p.id_endereco = e.id_endereco
+   and p.numero_conta = c.numero
+   and c.saldo <= 0
+   and upper(e.CCOMPLEMTO) = 'CASA';
